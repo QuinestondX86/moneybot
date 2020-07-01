@@ -83,9 +83,12 @@ bot.on('text', async (ctx, next) => {
 
 bot.command('/s', ((ctx, next) => {
   console.log(Number(ctx[property].acceleratorTime))
-  if(backgroundAcceleratorRunning === false) {
+  if(backgroundAcceleratorRunning === false && (ctx[property].acceleratorTime && ctx[property].accelerator)) {
     backgroundAcceleratorRunning = true
+
     ctx.reply("You run accelerator!🏎️")
+    ctx.reply("You run accelerator!🏎️")
+
     setInterval(() => {
       console.log("User: " + ctx[property].username + " have " + ctx[property].counter)
       ctx[property].counter = ctx[property].counter || 0
@@ -129,18 +132,22 @@ bot.command('/shop', (ctx) => {
   let buttons = []
   let buttonsTime= []
 
-  for (key in price) {
-    if (ctx[property].accelerator.indexOf('x' + key)) {
-      let acceleratorSpeed = Number(key) + 1
-      buttons.push('/buy' + key + ' (x' + acceleratorSpeed + ') 🏎️')
+  if(ctx[property].accelerator) {
+    for (key in price) {
+      if (ctx[property].accelerator.indexOf('x' + key)) {
+        let acceleratorSpeed = Number(key) + 1
+        buttons.push('/buy' + key + ' (x' + acceleratorSpeed + ') 🏎️')
+      }
     }
   }
 
-  for (key in priceTime) {
-    // if (ctx[property].acceleratorTime.indexOf(key)) {
-    buttonsTime.push('/buyt' + key + ' (' + key + 'ms) ⏱️')
-    // }
-    console.log(priceTime)
+  if(ctx[property].acceleratorTime) {
+    for (key in priceTime) {
+      if (ctx[property].acceleratorTime.indexOf(key)) {
+        buttonsTime.push('/buyt' + key + ' (' + key + 'ms) ⏱️')
+      }
+      console.log(priceTime)
+    }
   }
 
   return ctx.reply('+', Markup

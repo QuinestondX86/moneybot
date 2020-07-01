@@ -3,20 +3,18 @@
     {
       "id": "772200593:772200593",
       "data": {
-        "counter": 9999240000,
+        "counter": 1,
         "username": "jolydev",
-        "accelerator": "x2",
-        "acceleratorTime": [
-          "250"
-        ]
+        "accelerator": "",
+        "acceleratorTime": ""
       }
     },
     {
       "id": "545249849:545249849",
       "data": {
-        "counter": 792312,
+        "counter": 1,
         "username": "anelfer",
-        "accelerator": "x2,x2,x3,x3,x3,x3,x3,x2,x2,x2,x2,x2,x2,x2"
+        "accelerator": ""
       }
     }
   ]

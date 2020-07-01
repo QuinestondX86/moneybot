@@ -1,22 +1,22 @@
 {
   "sessions": [
     {
-      "id": "772200593:772200593",
-      "data": {
-        "counter": 13880460,
-        "username": "jolydev",
-        "accelerator": "x2,x2",
-        "acceleratorTime": [
-          "250"
-        ]
-      }
-    },
-    {
       "id": "545249849:545249849",
       "data": {
         "counter": 1,
         "username": "anelfer",
         "accelerator": ""
+      }
+    },
+    {
+      "id": "772200593:772200593",
+      "data": {
+        "counter": 99890070,
+        "username": "jolydev",
+        "accelerator": "x2",
+        "acceleratorTime": [
+          "250"
+        ]
       }
     }
   ]

@@ -56,10 +56,14 @@ bot.start((ctx, next) => {
   )
 })
 
+// Listener on + money.
 bot.on('text', async (ctx, next) => {
+  // If is really + money, but not different message.
   if(ctx.message.text === 'Add 💰') {
+    // Set counter.
     ctx[property].counter = ctx[property].counter || 0
-    let accelerators = ctx[property].accelerator.split(',')
+    // If has user accelerators.
+    let accelerators = ctx[property].accelerator ? ctx[property].accelerator.split(',') : null
 
     if(accelerators) {
       accelerators.map((a) => {
@@ -82,15 +86,19 @@ bot.on('text', async (ctx, next) => {
   return await next()
 })
 
-bot.command('/s', ((ctx, next) => {
+// Background accelerators +money.
+bot.command('/s', async (ctx, next) => {
+  // You can't many type /s only once.
   if(backgroundAcceleratorRunning === false && (ctx[property].acceleratorTime || ctx[property].accelerator)) {
     backgroundAcceleratorRunning = true
 
     ctx.reply("You run accelerator!🏎️")
     ctx.reply("You run accelerator!⏱")
 
+    // Set background counter.
     setInterval(() => {
       ctx[property].counter = ctx[property].counter || 0
+      // If we have many accelerators.
       let accelerators = ctx[property].accelerator.split(',')
 
       if(accelerators) {
@@ -108,14 +116,18 @@ bot.command('/s', ((ctx, next) => {
         ctx[property].counter++
         ctx[property].username = ctx.from.username || ctx.from.id
       }
-    }, Number(ctx[property].acceleratorTime) || 1000)
-  }
-}))
+    }, Number(ctx[property].acceleratorTime) || 1000) // Custom timeout (bought in store).
 
+    return await next()
+  }
+})
+
+// Get user money count.
 bot.command('/my', (ctx) => {
   ctx.replyWithMarkdown(`@${ctx.from.username || ctx.from.id} have \`${ctx[property].counter.toLocaleString({style: 'currency', currency: 'US'})}\`💰`)
 })
 
+// Get all users money count.
 bot.command('/all', (ctx) => {
   const usersData = ctx[property + 'DB'].get('sessions').value()
   let all = ''
@@ -127,25 +139,33 @@ bot.command('/all', (ctx) => {
   ctx.replyWithMarkdown(all)
 })
 
+// Shop buttons.
 bot.command('/shop', (ctx) => {
   let buttons = []
   let buttonsTime= []
 
-  if(!ctx[property].accelerator) {
-    for (key in price) {
+  for (key in price) {
+    // Accelerator speed (x2, x3...).
+    let acceleratorSpeed = Number(key) + 1
+    // User has accelerators or he is he just buying?
+    if(ctx[property].accelerator) {
+      // If user has accelerators, we don't show him accelerators which are already has.
       if (ctx[property].accelerator.indexOf('x' + key)) {
-        let acceleratorSpeed = Number(key) + 1
         buttons.push('/buy' + key + ' (x' + acceleratorSpeed + ') 🏎️')
       }
+    } else {
+      buttons.push('/buy' + key + ' (x' + acceleratorSpeed + ') 🏎️')
     }
   }
 
-  if(!ctx[property].acceleratorTime) {
-    for (key in priceTime) {
+  // Same as with usually accelerators.
+  for (key in priceTime) {
+    if(ctx[property].acceleratorTime) {
       if (ctx[property].acceleratorTime.indexOf(key)) {
         buttonsTime.push('/buyt' + key + ' (' + key + 'ms) ⏱️')
       }
-      console.log(priceTime)
+    } else {
+      buttonsTime.push('/buyt' + key + ' (' + key + 'ms) ⏱️')
     }
   }
 
@@ -160,25 +180,33 @@ bot.command('/shop', (ctx) => {
   )
 })
 
+// If user bought usually accelerator.
 bot.hears(/\/buy\d+/, (ctx) => {
+  // Message with id accelerator.
   let reg = ctx.message.text
   let acceleratorIdString = reg.match(/\/buy\d+/g)[0]
+  // Get id (two regexp because in message we have and accelerator speed besides id).
   let acceleratorId = acceleratorIdString.match(/\d+/g)
-  const newPrice = Number(ctx[property].counter) - price[acceleratorId]
-  const whatX = Number(acceleratorId) + 1
 
+  // Calculate new user money count.
+  const newPrice = Number(ctx[property].counter) - price[acceleratorId]
+
+  // If enough money.
   if(Number(ctx[property].counter) >= Number(price[acceleratorId])) {
-    ctx[property].accelerator = ctx[property].accelerator ? ctx[property].accelerator + ',x' +  + whatX : 'x' + whatX
+    // Check it's first user accelerator or no?
+    ctx[property].accelerator = ctx[property].accelerator ? ctx[property].accelerator + ',x' +  + acceleratorId++ : 'x' + acceleratorId++
     ctx[property].counter = newPrice
 
     console.log("User: " + ctx[property].username + " - bought accelerator with id" + acceleratorId)
 
+    ctx.reply('Accelerator bought successfully!✔️')
     ctx.reply('Accelerator bought successfully!✔️')
   } else {
     ctx.reply('Accelerator bought failed(hasn\'t money)!❌️')
   }
 })
 
+// If user bought time accelerator(same as buy).
 bot.hears(/\/buyt\d+/, (ctx) => {
   let reg = ctx.message.text
   let acceleratorIdString = reg.match(/\/buyt\d+/g)[0]
@@ -189,7 +217,7 @@ bot.hears(/\/buyt\d+/, (ctx) => {
   console.log(Number(priceTime[acceleratorId]))
 
   if(Number(ctx[property].counter) >= Number(priceTime[acceleratorId])) {
-    if(ctx[property].acceleratorTime.indexOf(acceleratorId)) {
+    if(!ctx[property].acceleratorTime || !ctx[property].acceleratorTime.indexOf(acceleratorId)) {
       ctx[property].acceleratorTime = ctx[property].acceleratorTime ? ctx[property].acceleratorTime + ',' +  acceleratorId : acceleratorId
       ctx[property].counter = newPrice
 
@@ -204,5 +232,6 @@ bot.hears(/\/buyt\d+/, (ctx) => {
   }
 })
 
+// Start bot.
 bot.startPolling()
 

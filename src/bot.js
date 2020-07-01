@@ -10,6 +10,11 @@ const
 const property = 'data'
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
+const price = {
+  x2: 10_000,
+  x3: 30_000
+}
+
 const localSession = new LocalSession({
   database: process.env.BOT_SESSION,
   property: 'session',
@@ -25,7 +30,7 @@ bot.use(localSession.middleware(property))
 bot.help((ctx) => {
   return ctx.reply('Money', Markup
     .keyboard([
-      ['/my 🏦', '/all 🤑', '/start 💰'],
+      ['/my 🏦', '/all 🤑', '/start 💰', '/shop 🛍️'],
     ])
     .oneTime()
     .resize()
@@ -67,6 +72,17 @@ bot.command('/all', (ctx) => {
   })
 
   ctx.replyWithMarkdown(all)
+})
+
+bot.command('/shop', (ctx) => {
+  return ctx.reply('+', Markup
+    .keyboard([
+      ['/shop/x2️22️ ✖️2️2️2️'], ['/shop/x3 ✖️']
+    ])
+    .oneTime(false)
+    .resize()
+    .extra()
+  )
 })
 
 bot.startPolling()

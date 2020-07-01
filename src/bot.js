@@ -183,12 +183,16 @@ bot.hears(/\/buyt\d+/, (ctx) => {
   console.log(Number(priceTime[acceleratorId]))
 
   if(Number(ctx[property].counter) >= Number(priceTime[acceleratorId])) {
-    ctx[property].acceleratorTime = ctx[property].acceleratorTime ? ctx[property].acceleratorTime + ',' +  acceleratorId : acceleratorId
-    ctx[property].counter = newPrice
+    if(ctx[property].acceleratorTime === acceleratorId) {
+      ctx[property].acceleratorTime = ctx[property].acceleratorTime ? ctx[property].acceleratorTime + ',' +  acceleratorId : acceleratorId
+      ctx[property].counter = newPrice
 
-    console.log("User: " + ctx[property].username + " - bought time accelerator with id" + acceleratorId)
+      console.log("User: " + ctx[property].username + " - bought time accelerator with id" + acceleratorId)
 
-    ctx.reply('Time accelerator bought successfully!✔️')
+      ctx.reply('Time accelerator bought successfully!✔️')
+    } else {
+      ctx.reply('Time accelerator bought failed(already bought)!❌️')
+    }
   } else {
     ctx.reply('Time accelerator bought failed(hasn\'t money)!❌️')
   }

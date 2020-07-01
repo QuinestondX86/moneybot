@@ -5,13 +5,14 @@
       "data": {
         "counter": 1,
         "username": "anelfer",
-        "accelerator": ""
+        "accelerator": "",
+        "acceleratorTime": ""
       }
     },
     {
       "id": "772200593:772200593",
       "data": {
-        "counter": 99890070,
+        "counter": 99890522,
         "username": "jolydev",
         "accelerator": "x2",
         "acceleratorTime": [

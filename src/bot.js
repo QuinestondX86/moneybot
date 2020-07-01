@@ -100,6 +100,15 @@ bot.command('/s', async (ctx, next) => {
   if(backgroundAcceleratorRunning === false && (ctx[property].acceleratorTime || ctx[property].accelerator)) {
     backgroundAcceleratorRunning = true
 
+    ctx.reply('You run background farm, to save progress just press "Add 💰".', Markup
+      .keyboard([
+        ['Add 💰']
+      ])
+      .oneTime(false)
+      .resize()
+      .extra()
+    )
+
     ctx.reply("You run accelerator!🏎️")
     ctx.reply("You run accelerator!⏱")
 

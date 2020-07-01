@@ -1,26 +1,31 @@
+// Load .env file.
 require('dotenv').config({
   path: '../.env'
 })
 
 const
   Telegraf = require('telegraf'),
-  TelegrafContext = require('telegraf/context'),
   LocalSession = require('telegraf-session-local'),
   Markup = require('telegraf/markup'),
   property = 'data',
   bot = new Telegraf(process.env.BOT_TOKEN)
 
+// Price for usually accelerators.
 const price = {
   1: 10_000,
   2: 30_000
 }
+// Price for time accelerators.
 const priceTime = {
   500: 40_000,
   250: 100_000
 }
 
+// User already typed "/s"?
 let backgroundAcceleratorRunning = false
 
+// Init local sessions.
+// TODO: Add MongoDb or something like this.
 const localSession = new LocalSession({
   database: process.env.BOT_SESSION,
   property: 'session',
@@ -31,8 +36,10 @@ const localSession = new LocalSession({
   }
 })
 
+// Load local session.
 bot.use(localSession.middleware(property))
 
+// Helper.
 bot.help((ctx) => {
   return ctx.reply('Money', Markup
     .keyboard([
@@ -45,6 +52,7 @@ bot.help((ctx) => {
   )
 })
 
+// Start default buttons.
 bot.start((ctx, next) => {
   return ctx.reply('+', Markup
     .keyboard([
@@ -86,9 +94,9 @@ bot.on('text', async (ctx, next) => {
   return await next()
 })
 
-// Background accelerators +money.
+// Background accelerators (+money).
 bot.command('/s', async (ctx, next) => {
-  // You can't many type /s only once.
+  // You can't many type "/s" only once.
   if(backgroundAcceleratorRunning === false && (ctx[property].acceleratorTime || ctx[property].accelerator)) {
     backgroundAcceleratorRunning = true
 
@@ -220,6 +228,7 @@ bot.hears(/\/buyt\d+/, (ctx) => {
   console.log(Number(priceTime[acceleratorId]))
 
   if(Number(ctx[property].counter) >= Number(priceTime[acceleratorId])) {
+    // If user already bought this time accelerator.
     if(!ctx[property].acceleratorTime || !ctx[property].acceleratorTime.indexOf(acceleratorId)) {
       ctx[property].acceleratorTime = ctx[property].acceleratorTime ? ctx[property].acceleratorTime + ',' +  acceleratorId : acceleratorId
       ctx[property].counter = newPrice

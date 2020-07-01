@@ -62,8 +62,9 @@ bot.on('text', async (ctx, next) => {
     let accelerators = ctx[property].accelerator.split(',')
 
     if(accelerators) {
-      accelerators.forEach(function(item, index, array) {
-        switch (item) {
+      accelerators.map((a) => {
+        console.log(a)
+        switch (a) {
           case "x3":
             ctx[property].counter += 3
             break
@@ -82,21 +83,19 @@ bot.on('text', async (ctx, next) => {
 })
 
 bot.command('/s', ((ctx, next) => {
-  console.log(Number(ctx[property].acceleratorTime))
-  if(backgroundAcceleratorRunning === false && (ctx[property].acceleratorTime && ctx[property].accelerator)) {
+  if(backgroundAcceleratorRunning === false && (ctx[property].acceleratorTime || ctx[property].accelerator)) {
     backgroundAcceleratorRunning = true
 
     ctx.reply("You run accelerator!🏎️")
-    ctx.reply("You run accelerator!🏎️")
+    ctx.reply("You run accelerator!⏱")
 
     setInterval(() => {
-      console.log("User: " + ctx[property].username + " have " + ctx[property].counter)
       ctx[property].counter = ctx[property].counter || 0
       let accelerators = ctx[property].accelerator.split(',')
 
       if(accelerators) {
-        accelerators.forEach(function(item, index, array) {
-          switch (item) {
+        accelerators.map((a) => {
+          switch (a) {
             case "x3":
               ctx[property].counter += 3
               break
@@ -132,7 +131,7 @@ bot.command('/shop', (ctx) => {
   let buttons = []
   let buttonsTime= []
 
-  if(ctx[property].accelerator) {
+  if(!ctx[property].accelerator) {
     for (key in price) {
       if (ctx[property].accelerator.indexOf('x' + key)) {
         let acceleratorSpeed = Number(key) + 1
@@ -141,7 +140,7 @@ bot.command('/shop', (ctx) => {
     }
   }
 
-  if(ctx[property].acceleratorTime) {
+  if(!ctx[property].acceleratorTime) {
     for (key in priceTime) {
       if (ctx[property].acceleratorTime.indexOf(key)) {
         buttonsTime.push('/buyt' + key + ' (' + key + 'ms) ⏱️')
@@ -190,7 +189,7 @@ bot.hears(/\/buyt\d+/, (ctx) => {
   console.log(Number(priceTime[acceleratorId]))
 
   if(Number(ctx[property].counter) >= Number(priceTime[acceleratorId])) {
-    if(ctx[property].acceleratorTime === acceleratorId) {
+    if(ctx[property].acceleratorTime.indexOf(acceleratorId)) {
       ctx[property].acceleratorTime = ctx[property].acceleratorTime ? ctx[property].acceleratorTime + ',' +  acceleratorId : acceleratorId
       ctx[property].counter = newPrice
 

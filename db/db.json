@@ -3,10 +3,12 @@
     {
       "id": "772200593:772200593",
       "data": {
-        "counter": 1,
+        "counter": 13880460,
         "username": "jolydev",
-        "accelerator": "",
-        "acceleratorTime": ""
+        "accelerator": "x2,x2",
+        "acceleratorTime": [
+          "250"
+        ]
       }
     },
     {

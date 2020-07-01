@@ -141,7 +141,10 @@ bot.command('/all', (ctx) => {
 
 // Shop buttons.
 bot.command('/shop', (ctx) => {
+  // In order to split the buttons into two lines.
+  // Usually accelerator buttons
   let buttons = []
+  // Time accelerator buttons
   let buttonsTime= []
 
   for (key in price) {

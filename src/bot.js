@@ -4,6 +4,7 @@ require('dotenv').config({
 
 const
   Telegraf = require('telegraf'),
+  TelegrafContext = require('telegraf/context'),
   LocalSession = require('telegraf-session-local'),
   Markup = require('telegraf/markup'),
   property = 'data',
@@ -13,6 +14,8 @@ const price = {
   1: 10_000,
   2: 30_000
 }
+
+let sessionId = ''
 
 const localSession = new LocalSession({
   database: process.env.BOT_SESSION,
@@ -29,7 +32,8 @@ bot.use(localSession.middleware(property))
 bot.help((ctx) => {
   return ctx.reply('Money', Markup
     .keyboard([
-      ['/my 🏦', '/all 🤑', '/start 💰', '/shop 🛍️'],
+      ['/my 🏦', '/all 🤑', '/start 💰'],
+      ['/shop 🛍️', '/s 🏎️']
     ])
     .oneTime()
     .resize()
@@ -63,7 +67,7 @@ bot.on('text', async (ctx, next) => {
             ctx[property].counter += 2
             break
         }
-      });
+      })
     } else {
       ctx[property].counter++
       ctx[property].username = ctx.from.username || ctx.from.id
@@ -72,6 +76,30 @@ bot.on('text', async (ctx, next) => {
 
   return await next()
 })
+
+bot.command('/s', ((ctx, next) => {
+  setInterval(() => {
+    console.log(ctx[property].counter)
+    ctx[property].counter = ctx[property].counter || 0
+    let accelerators = ctx[property].accelerator.split(',')
+
+    if(accelerators) {
+      accelerators.forEach(function(item, index, array) {
+        switch (item) {
+          case "x3":
+            ctx[property].counter += 3
+            break
+          case "x2":
+            ctx[property].counter += 2
+            break
+        }
+      })
+    } else {
+      ctx[property].counter++
+      ctx[property].username = ctx.from.username || ctx.from.id
+    }
+  }, 1000)
+}))
 
 bot.command('/my', (ctx) => {
   ctx.replyWithMarkdown(`@${ctx.from.username || ctx.from.id} have \`${ctx[property].counter}\`💰`)

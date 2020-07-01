@@ -5,14 +5,13 @@ require('dotenv').config({
 const
   Telegraf = require('telegraf'),
   LocalSession = require('telegraf-session-local'),
-  Markup = require('telegraf/markup')
-
-const property = 'data'
-const bot = new Telegraf(process.env.BOT_TOKEN)
+  Markup = require('telegraf/markup'),
+  property = 'data',
+  bot = new Telegraf(process.env.BOT_TOKEN)
 
 const price = {
-  x2: 10_000,
-  x3: 30_000
+  1: 10_000,
+  2: 30_000
 }
 
 const localSession = new LocalSession({
@@ -52,8 +51,23 @@ bot.start((ctx, next) => {
 bot.on('text', async (ctx, next) => {
   if(ctx.message.text === 'Add 💰') {
     ctx[property].counter = ctx[property].counter || 0
-    ctx[property].counter++
-    ctx[property].username = ctx.from.username || ctx.from.id
+    let accelerators = ctx[property].accelerator.split(',')
+
+    if(accelerators) {
+      accelerators.forEach(function(item, index, array) {
+        switch (item) {
+          case "x3":
+            ctx[property].counter += 3
+            break
+          case "x2":
+            ctx[property].counter += 2
+            break
+        }
+      });
+    } else {
+      ctx[property].counter++
+      ctx[property].username = ctx.from.username || ctx.from.id
+    }
   }
 
   return await next()
@@ -75,14 +89,36 @@ bot.command('/all', (ctx) => {
 })
 
 bot.command('/shop', (ctx) => {
+  let buttons = []
+  for (key in price) {
+    if (ctx[property].accelerator.indexOf('x' + key)) {
+      buttons.push('/buy' + key)
+    }
+  }
+
   return ctx.reply('+', Markup
     .keyboard([
-      ['/shop/x2️22️ ✖️2️2️2️'], ['/shop/x3 ✖️']
+      buttons
     ])
     .oneTime(false)
     .resize()
     .extra()
   )
+})
+
+bot.hears(/\/buy\d+/, (ctx) => {
+  let reg = ctx.message.text
+  let acceleratorId = Number(reg.match(/\d+/g))
+  const newPrice = Number(ctx[property].counter) - price[acceleratorId]
+
+  if(Number(ctx[property].counter) >= price[acceleratorId++]) {
+    ctx[property].accelerator = ctx[property].accelerator ? ctx[property].accelerator + ',x' +  acceleratorId++ : 'x' + acceleratorId++
+    ctx[property].counter = newPrice
+
+    ctx.reply('Accelerator bought successfully!✔️')
+  } else {
+    ctx.reply('Accelerator bought failed(hasn\'t money)!❌️')
+  }
 })
 
 bot.startPolling()

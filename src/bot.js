@@ -75,19 +75,24 @@ bot.on('text', async (ctx, next) => {
 
     if(accelerators) {
       accelerators.map((a) => {
-        console.log(a)
         switch (a) {
           case "x3":
             ctx[property].counter += 3
+            console.log(`User @${ctx.from.username || ctx.from.id} get x3 money. He has ${ctx[property].counter}$`)
+
             break
           case "x2":
             ctx[property].counter += 2
+            console.log(`User @${ctx.from.username || ctx.from.id} get x2 money. He has ${ctx[property].counter}$`)
+
             break
         }
       })
     } else {
       ctx[property].counter++
       ctx[property].username = ctx.from.username || ctx.from.id
+
+      console.log(`User @${ctx.from.username || ctx.from.id} get money.`)
     }
   }
 
@@ -108,6 +113,11 @@ bot.command('/s', async (ctx, next) => {
       .resize()
       .extra()
     )
+
+    console.log(`User @${ctx.from.username || ctx.from.id} run accelerators. He has ${ctx[property].counter.toLocaleString({
+        style: 'currency', 
+        currency: 'US'
+    })}$`)
 
     ctx.reply("You run accelerator!🏎️")
     ctx.reply("You run accelerator!⏱")
@@ -141,6 +151,10 @@ bot.command('/s', async (ctx, next) => {
 
 // Get user money count.
 bot.command('/my', (ctx) => {
+  console.log(`User @${ctx.from.username || ctx.from.id} request him statistic. He has ${ctx[property].counter.toLocaleString({
+    style: 'currency',
+    currency: 'US'})
+  }$`)
   ctx.replyWithMarkdown(`@${ctx.from.username || ctx.from.id} have \`${ctx[property].counter.toLocaleString({style: 'currency', currency: 'US'})}\`💰`)
 })
 
@@ -153,6 +167,11 @@ bot.command('/all', (ctx) => {
     all += `@${user.data.username} have \`${user.data.counter.toLocaleString({style: 'currency', currency: 'US'})}\`💰\n`
   })
 
+  console.log(`User @${ctx.from.username || ctx.from.id} request statistic all users. He has ${ctx[property].counter.toLocaleString({
+    style: 'currency', 
+    currency: 'US'
+  })}$`)
+
   ctx.replyWithMarkdown(all)
 })
 
@@ -163,6 +182,8 @@ bot.command('/shop', (ctx) => {
   let buttons = []
   // Time accelerator buttons
   let buttonsTime= []
+
+  console.log(`User @${ctx.from.username || ctx.from.id} request shop.`)
 
   for (key in price) {
     // Accelerator speed (x2, x3...).
@@ -217,7 +238,7 @@ bot.hears(/\/buy\d+/, (ctx) => {
     ctx[property].accelerator = ctx[property].accelerator ? ctx[property].accelerator + ',x' +  + acceleratorId++ : 'x' + acceleratorId++
     ctx[property].counter = newPrice
 
-    console.log("User: " + ctx[property].username + " - bought accelerator with id" + acceleratorId)
+    console.log(`User: @${ctx[property].username} - bought accelerator with id${acceleratorId}`)
 
     ctx.reply('Accelerator bought successfully!✔️')
     ctx.reply('Accelerator bought successfully!✔️')
@@ -242,7 +263,7 @@ bot.hears(/\/buyt\d+/, (ctx) => {
       ctx[property].acceleratorTime = ctx[property].acceleratorTime ? ctx[property].acceleratorTime + ',' +  acceleratorId : acceleratorId
       ctx[property].counter = newPrice
 
-      console.log("User: " + ctx[property].username + " - bought time accelerator with id" + acceleratorId)
+      console.log(`User: ${ctx[property].username} - bought time accelerator with id${acceleratorId}`)
 
       ctx.reply('Time accelerator bought successfully!✔️')
     } else {

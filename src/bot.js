@@ -8,7 +8,9 @@ const
   LocalSession = require('telegraf-session-local'),
   Markup = require('telegraf/markup'),
   property = 'data',
-  bot = new Telegraf(process.env.BOT_TOKEN)
+  bot = new Telegraf(process.env.BOT_TOKEN),
+  MongoClient = require('mongodb').MongoClient,
+  chalk = require('chalk')
 
 // Price for usually accelerators.
 const price = {
@@ -21,11 +23,25 @@ const priceTime = {
   250: 100_000
 }
 
+// Mongo client.
+const mongoClient = new MongoClient(
+  `mongodb+srv://money-bot:${process.env.BOT_DB_PASSWORD}@cluster0.i9ln5.gcp.mongodb.net/test`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
+)
+
+// Check Mongo connect...
+mongoClient.connect((err, client) => {
+  err && console.log(chalk.red(err))
+  client.isConnected() === true && console.log(chalk.green("MongoDB - Connected successfully..."))
+})
+
 // User already typed "/s"?
 let backgroundAcceleratorRunning = false
 
 // Init local sessions.
-// TODO: Add MongoDb or something like this.
 const localSession = new LocalSession({
   database: process.env.BOT_SESSION,
   property: 'session',

@@ -12,7 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
+    "mongodb": "^3.5.9",
     "pg": "^8.2.1",
     "telegraf": "^3.38.0",
     "telegraf-session-local": "^1.0.3"
